@@ -13,42 +13,57 @@ public class TouchAreaHarbor : MonoBehaviour {
     bool colorSwitch = false;
     bool hasMoved = false;
     bool isCHarging = false;
-    float percent = 0;
+    float passengers = 0;
     bool isSliding = false;
     Vector3 startSLidePoint;
     Vector3 endSLidePoint;
     bool initialiseSlide = false;
     float timer = 0;
-    bool lastPhaseSliding = false;
+    float slidedDistance;
 
+    GameManager myManager;
+    
+
+    int costPerPassenger = 50;
+    int passengersLoaded;
 
     void Start ()
     {
+        myManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         myText = transform.GetChild(0).GetComponent<Text>();
-     
+       // InvokeRepeating("SpawnShip", 0, 0.5f);
     }
 
     void SpawnShip()
     {
-        myText.text = "ShipStart";
+     //   myText.text = "ShipStart";
+        myManager.spentMoney(costPerPassenger * passengersLoaded);
         GameObject go = (GameObject)Instantiate(Resources.Load("Ship"), transform.parent.parent.FindChild("ShipSpawn").position, Quaternion.identity);
         go.GetComponent<ship>().SetPath(transform.parent.parent.FindChild("Route").gameObject);
+        go.GetComponent<ship>().loadPassengers(passengersLoaded);
+        go.GetComponent<ship>().setSpeed(slidedDistance);
+        passengersLoaded = 0;
     }
 	void Update ()
     {
-        if (isSliding != lastPhaseSliding && isSliding == false)
+       // myText.text = slidedDistance.ToString();
+
+        if ( isSliding == false && slidedDistance >= 75)
         {
-            SpawnShip();
-            lastPhaseSliding = false;
-           
+            if (passengersLoaded >= 10)
+            { 
+                SpawnShip();
+                passengersLoaded = 0;
+            }
+            slidedDistance = 0;
         }
 
         if (isCHarging == true)
         {
-            percent += 1 * Time.deltaTime * 15;
-            int percentInt = (int)Mathf.Clamp(percent, 0, 100);
-            myText.text = percentInt.ToString() + " %";
-         
+            passengers += 1 * Time.deltaTime * 20;
+            int passengersInt = (int)Mathf.Clamp(passengers, 0, 100);
+            myText.text = passengersInt.ToString() + " passengers loaded";
+            passengersLoaded = passengersInt;
         }
         if (iWasTouched == true && isSliding == false)
         {
@@ -75,24 +90,30 @@ public class TouchAreaHarbor : MonoBehaviour {
             iWasTouched = false;
             hasMoved = false;
             isCHarging = false;
-            percent = 0;
+            passengers = 0;
             gameObject.GetComponent<Image>().color = new Color(1, 1, 1, 0.3f);
             isSliding = false;
             initialiseSlide = false;
+          
+           
         }
 
         if (EventSystem.current.IsPointerOverGameObject(myFIngerID) && Input.touchCount > 0)
         {
 
             iWasTouched = true;
-            //  gameObject.GetComponent<Image>().color = new Color(0, 0, 0, 0.3f);
+
             return;
         }
+        else
+        {
+
+        }
+     
 
         if (myTouch.phase == TouchPhase.Moved)
         {
-
-
+            
             if (initialiseSlide == false)
             {
 
@@ -101,10 +122,10 @@ public class TouchAreaHarbor : MonoBehaviour {
                 initialiseSlide = true;
                 isCHarging = false;
             }
-            if (timer <= 0.5f)
+            if (timer <= 0.4f)
             {
                 endSLidePoint = myTouch.position;
-                lastPhaseSliding = true;
+                slidedDistance = Vector3.Distance(startSLidePoint, endSLidePoint);
             }
         }
     }
