@@ -5,6 +5,8 @@ using UnityEngine.EventSystems;
 
 public class TouchAreaHarbor : MonoBehaviour {
 
+  
+
     EventSystem eventSystem = EventSystem.current;
     Text myText;
     Touch myTouch;
@@ -20,24 +22,28 @@ public class TouchAreaHarbor : MonoBehaviour {
     bool initialiseSlide = false;
     float timer = 0;
     float slidedDistance;
+    int moneyPerPassenger;
 
     GameManager myManager;
     
 
-    int costPerPassenger = 50;
+   // int costPerPassenger = 50;
     int passengersLoaded;
+
+    
 
     void Start ()
     {
         myManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         myText = transform.GetChild(0).GetComponent<Text>();
-       // InvokeRepeating("SpawnShip", 0, 0.5f);
+        // InvokeRepeating("SpawnShip", 0, 0.5f);
+        moneyPerPassenger = (int)myManager.MoneyPerPassenger;
     }
 
     void SpawnShip()
     {
      //   myText.text = "ShipStart";
-        myManager.spentMoney(costPerPassenger * passengersLoaded);
+        myManager.earnMoney(moneyPerPassenger * passengersLoaded);
         GameObject go = (GameObject)Instantiate(Resources.Load("Ship"), transform.parent.parent.FindChild("ShipSpawn").position, Quaternion.identity);
         go.GetComponent<ship>().SetPath(transform.parent.parent.FindChild("Route").gameObject);
         go.GetComponent<ship>().loadPassengers(passengersLoaded);

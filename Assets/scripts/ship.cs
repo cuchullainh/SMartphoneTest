@@ -8,12 +8,14 @@ public class ship : MonoBehaviour {
     Vector3 despawnPoint;
     int passengersLoaded;
     GameManager myManager;
-    int livingPassengersValue = 100;
+    //int livingPassengersValue = 100;
     float speed;
+    int awarenessPerDeath;
 
     void Start ()
     {
         myManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        awarenessPerDeath = (int)myManager.AwarenessPerPassengerDead;
 
     }
 	
@@ -27,8 +29,8 @@ public class ship : MonoBehaviour {
         }
         if (Vector3.Distance(transform.position, despawnPoint) <= 0.1f)
         {
-            myManager.earnMoney(passengersLoaded * 100);
-            Destroy(gameObject);
+           //doSomethingwhenShipReachesTarget
+              Destroy(gameObject);
         }
         transform.LookAt(myParentPath.transform.GetChild(nexWayPoint).position);
         transform.Translate(0,0, speed * Time.deltaTime);
@@ -45,14 +47,21 @@ public class ship : MonoBehaviour {
     {
 
         if (other.gameObject.tag == "Enemy")
+        {
             Instantiate(Resources.Load("ShipDownParticle"), transform.position, Quaternion.identity);
+            IncreaseAwareness(passengersLoaded);
             Destroy(gameObject);
-
+        }
     }
 
     public void loadPassengers(int passengers)
     {
         passengersLoaded = passengers;
+    }
+
+    public void IncreaseAwareness(int passengers)
+    {
+        myManager.AddAwareness(passengersLoaded * awarenessPerDeath);
     }
 
     public void setSpeed(float newSpeed)

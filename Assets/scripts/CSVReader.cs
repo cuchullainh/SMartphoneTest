@@ -33,11 +33,11 @@ public class CSVReader : MonoBehaviour {
             var line = myReader.ReadLine();
             string[] values = line.Split(';');
             readMoney = values[0];
-            print(readMoney);
+          //  print(readMoney);
         }
         myReader.Close();
         StartMoney = int.Parse(readMoney);
-        print(StartMoney * 2);
+      //  print(StartMoney * 2);
 
     }
 

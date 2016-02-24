@@ -7,14 +7,17 @@ public class EnemyShip : MonoBehaviour {
     GameObject myParentPath;
     Vector3 despawnPoint;
     float speed = 1;
+    float baseSpeedKoefficient = 0.3f;
     int childItems;
     bool backWard = false;
+    EnemyCOntroller myController;
 
 
     void Start ()
     {
-	
-	}
+        myController = GameObject.Find("EnemyController").gameObject.GetComponent<EnemyCOntroller>();
+
+    }
 	
 
 	void Update ()
@@ -28,11 +31,12 @@ public class EnemyShip : MonoBehaviour {
             }
             if (Vector3.Distance(transform.position, despawnPoint) <= 0.1f)
             {
+                DecreaseEnemyShipCounter();
                 Destroy(gameObject);
             }
 
             transform.LookAt(myParentPath.transform.GetChild(nexWayPoint).position);
-            transform.Translate(0, 0, speed * Time.deltaTime);
+            transform.Translate(0, 0, speed * baseSpeedKoefficient * Time.deltaTime);
         }
         else
         {
@@ -47,11 +51,12 @@ public class EnemyShip : MonoBehaviour {
             }
             if (Vector3.Distance(transform.position, despawnPoint) <= 0.1f)
             {
+                DecreaseEnemyShipCounter();
                 Destroy(gameObject);
             }
 
             transform.LookAt(myParentPath.transform.GetChild(nexWayPoint).position);
-            transform.Translate(0, 0, speed * Time.deltaTime);
+            transform.Translate(0, 0, speed * baseSpeedKoefficient *Time.deltaTime);
         }
     }
     public void SetPath(GameObject parent)
@@ -83,6 +88,11 @@ public class EnemyShip : MonoBehaviour {
 
     }
 
+
+    void DecreaseEnemyShipCounter()
+    {
+        myController.ShipCounter--;
+    }
 }
 
 
