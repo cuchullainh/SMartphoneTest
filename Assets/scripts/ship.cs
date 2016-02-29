@@ -11,6 +11,13 @@ public class ship : MonoBehaviour {
     //int livingPassengersValue = 100;
     float speed;
     int awarenessPerDeath;
+    int shipRefund = 0;
+    float greenWeight = 1;
+    float yellowWeight = 0.75f;
+    float redWeight = 0.5f;
+    float yellowThreshold = 65;
+    float redThreshold = 85;
+  
 
     void Start ()
     {
@@ -29,13 +36,18 @@ public class ship : MonoBehaviour {
         }
         if (Vector3.Distance(transform.position, despawnPoint) <= 0.1f)
         {
-           //doSomethingwhenShipReachesTarget
+            //doSomethingwhenShipReachesTarget
+            myManager.earnMoney(shipRefund);
               Destroy(gameObject);
         }
         transform.LookAt(myParentPath.transform.GetChild(nexWayPoint).position);
         transform.Translate(0,0, speed * Time.deltaTime);
 	}
 
+    public void ShipRefund(int refund)
+    {
+        shipRefund = refund;
+    }
     public void SetPath(GameObject parent)
     {
         myParentPath = parent;
@@ -67,6 +79,28 @@ public class ship : MonoBehaviour {
     public void setSpeed(float newSpeed)
     {
         float calcSpeed = Mathf.Lerp(0.1f, 1, newSpeed/800);
-        speed = calcSpeed;
+        speed = calcSpeed* LoadedColorNSpeed();
+    }
+
+    public float LoadedColorNSpeed()
+    {
+        float speedCoeff = 0;
+        if (passengersLoaded < yellowThreshold)
+        {
+            speedCoeff = greenWeight;
+            GetComponent<MeshRenderer>().material.color = Color.green;
+        }
+        else if (passengersLoaded >= yellowThreshold && passengersLoaded < redThreshold)
+        {
+            speedCoeff = yellowWeight;
+            GetComponent<MeshRenderer>().material.color = Color.yellow;
+        }
+        else if (passengersLoaded >= redThreshold)
+        {
+            speedCoeff = redWeight;
+            GetComponent<MeshRenderer>().material.color = Color.red;
+        }
+       
+        return speedCoeff;
     }
 }

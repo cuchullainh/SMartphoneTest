@@ -7,7 +7,7 @@ public class EnemyCOntroller : MonoBehaviour {
     float spawnTimer = 0;
     float spawnInterval = 1;
     int shipCounter = 0;
-    int maxShips = 6;
+    int maxShips = 8;
     int minShips = 2;
     int currentMaxShipsFromAwareness;
     float minSpeed = 1f;

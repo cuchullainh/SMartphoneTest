@@ -23,6 +23,7 @@ public class TouchAreaHarbor : MonoBehaviour {
     float timer = 0;
     float slidedDistance;
     int moneyPerPassenger;
+    int shipPawn = 5000;
 
     GameManager myManager;
     
@@ -48,7 +49,9 @@ public class TouchAreaHarbor : MonoBehaviour {
         go.GetComponent<ship>().SetPath(transform.parent.parent.FindChild("Route").gameObject);
         go.GetComponent<ship>().loadPassengers(passengersLoaded);
         go.GetComponent<ship>().setSpeed(slidedDistance);
+        go.GetComponent<ship>().ShipRefund(shipPawn);
         passengersLoaded = 0;
+        myManager.spentMoney(shipPawn);
     }
 	void Update ()
     {

@@ -21,7 +21,18 @@ public class GameManager : MonoBehaviour {
     float currentEventTimer = 0;
     float currentEventPopUpTime = 10;
     EventPopUpStarter eventStarter;
-  
+
+    float DPSTimer = 0;
+    int DPS = 500;
+    float securityTimer = 0;
+    int FPS = 2;
+
+    GameObject frontierSecColor;
+ 
+   
+   
+    float yellowThreshold = 0.4f;
+    float redThreshold = 0.75f;
 
     public float MoneyPerPassenger
     {
@@ -88,21 +99,25 @@ public class GameManager : MonoBehaviour {
         Highscore = GameObject.Find("HighScore").GetComponent<Text>();
         globalAwareNess = GameObject.Find("GlobalAwareness").GetComponent<Text>();
         Highscore.text = "Money " + money.ToString();
-        globalAwareNess.text = "GlobalAwareness " + awareness.ToString();
+        globalAwareNess.text = "FrontierSecurity " + awareness.ToString();
         highScoreBar = GameObject.Find("HighScoreBar").GetComponent<Slider>();
         awareNessBar = GameObject.Find("GlobalAwareNessBar").GetComponent<Slider>();
         highScoreBar.value = money / maxMoney;
         awareNessBar.value = awareness / maxAwareNess;
         eventStarter = GameObject.Find("EventPopUpField").GetComponent<EventPopUpStarter>();
- 
 
-      
+        frontierSecColor = awareNessBar.transform.FindChild("Fill Area").FindChild("Fill").gameObject;
+        frontierSecColor.GetComponent<Image>().color = Color.green;
+
+
     }
 	
 	
 	void Update ()
     {
-      
+        DollarPerSecond();
+        SecurityPerSecond();
+
         if (eventIsActive == false)
         {
             eventTimer += Time.deltaTime;
@@ -129,6 +144,10 @@ public class GameManager : MonoBehaviour {
         money -= value;
         Highscore.text = "Money " + money.ToString();
         highScoreBar.value = money / maxMoney;
+        if (Money <= 0)
+        {
+            Application.LoadLevel(1);
+        }
     }
 
     public void earnMoney(int value)
@@ -140,15 +159,41 @@ public class GameManager : MonoBehaviour {
     public void AddAwareness(int value)
     {
         awareness += value;
-        globalAwareNess.text = "GlobalAwareness " + awareness.ToString();
+        globalAwareNess.text = "FrontierSecurity " + awareness.ToString();
         awareNessBar.value = awareness / maxAwareNess;
+        AwarenessColor();
+        if (Awareness >= MaxAwareNess)
+        {
+            Application.LoadLevel(1);
+        }
+
     }
 
+    void AwarenessColor()
+    {
+        if (Awareness/MaxAwareNess < yellowThreshold)
+        {
+
+            frontierSecColor.GetComponent<Image>().color = Color.green;
+        }
+        else if (Awareness / MaxAwareNess >= yellowThreshold && Awareness / MaxAwareNess < redThreshold)
+        {
+
+            frontierSecColor.GetComponent<Image>().color = Color.yellow;
+        }
+        else if (Awareness / MaxAwareNess >= redThreshold)
+        {
+
+            frontierSecColor.GetComponent<Image>().color = Color.red;
+        }
+    }
     public void ReduceAwareness(int value)
     {
         awareness -= value;
-        globalAwareNess.text = "GlobalAwareness " + awareness.ToString();
+        awareness = Mathf.Clamp(awareness, 0, MaxAwareNess);
+        globalAwareNess.text = "FrontierSecurity " + awareness.ToString();
         awareNessBar.value = awareness / maxAwareNess;
+        AwarenessColor();
     }
 
     void StartGameEvent()
@@ -166,4 +211,26 @@ public class GameManager : MonoBehaviour {
         }
 
     }
+
+    void DollarPerSecond()
+    {
+        DPSTimer += Time.deltaTime;
+        if (DPSTimer >= 1)
+        {
+            DPSTimer = 0;
+            spentMoney(DPS);
+        }
+    }
+
+    void SecurityPerSecond()
+    {
+        securityTimer += Time.deltaTime;
+        if (securityTimer >= 1)
+        {
+            securityTimer = 0;
+            ReduceAwareness(FPS);
+        }
+    }
+
+
 }
