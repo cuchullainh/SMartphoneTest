@@ -4,7 +4,7 @@ using System.Collections;
 public class UnlockMe : MonoBehaviour {
 
     
-    int costToUnlock = 75000;
+    int costToUnlock = 10000;
     GameManager myManager;
    
 

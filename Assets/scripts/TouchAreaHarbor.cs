@@ -5,9 +5,9 @@ using UnityEngine.EventSystems;
 
 public class TouchAreaHarbor : MonoBehaviour {
 
-  
 
-    EventSystem eventSystem = EventSystem.current;
+    Text DebugBox; 
+    
     Text myText;
     Touch myTouch;
     int myFIngerID;
@@ -24,6 +24,8 @@ public class TouchAreaHarbor : MonoBehaviour {
     float slidedDistance;
     int moneyPerPassenger;
     int shipPawn = 5000;
+    Vector2 uiPosition;
+    Camera myCamera;
 
     GameManager myManager;
     
@@ -35,10 +37,13 @@ public class TouchAreaHarbor : MonoBehaviour {
 
     void Start ()
     {
+         DebugBox = GameObject.Find("DebugBox").gameObject.GetComponent<Text>();
         myManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         myText = transform.GetChild(0).GetComponent<Text>();
         // InvokeRepeating("SpawnShip", 0, 0.5f);
         moneyPerPassenger = (int)myManager.MoneyPerPassenger;
+        myCamera = Camera.main;
+        uiPosition = myCamera.WorldToScreenPoint(gameObject.transform.position);
     }
 
     void SpawnShip()
@@ -55,7 +60,8 @@ public class TouchAreaHarbor : MonoBehaviour {
     }
 	void Update ()
     {
-       // myText.text = slidedDistance.ToString();
+        // myText.text = slidedDistance.ToString();
+       
 
         if ( isSliding == false && slidedDistance >= 75)
         {
@@ -103,20 +109,24 @@ public class TouchAreaHarbor : MonoBehaviour {
             gameObject.GetComponent<Image>().color = new Color(1, 1, 1, 0.3f);
             isSliding = false;
             initialiseSlide = false;
-          
+
+            myFIngerID = 0;
            
         }
 
-        if (EventSystem.current.IsPointerOverGameObject(myFIngerID) && Input.touchCount > 0)
+        if (Input.touchCount > 0 )
         {
+            if (EventSystem.current.IsPointerOverGameObject(myFIngerID))
+            {
+               
+               // DebugBox.text =  "transformpos = " + uiPosition + "tpos = " + myTouch.position;
+                    if (Vector2.Distance(myTouch.position,uiPosition) <= 50 )
+                {
+                    iWasTouched = true;
+                }
 
-            iWasTouched = true;
-
-            return;
-        }
-        else
-        {
-
+                return;
+            }
         }
      
 
