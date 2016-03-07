@@ -23,9 +23,9 @@ public class GameManager : MonoBehaviour {
     EventPopUpStarter eventStarter;
 
     float DPSTimer = 0;
-    int DPS = 500;
+    int DPS = 750;
     float securityTimer = 0;
-    int FPS = 2;
+    int FPS = 5;
 
     GameObject frontierSecColor;
  
