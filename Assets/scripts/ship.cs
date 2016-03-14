@@ -20,10 +20,21 @@ public class ship : MonoBehaviour {
     float redThreshold = 75;
     float calcSpeed = 0;
     float originSpeed = 0;
+    Rigidbody2D myRig;
 
     Canvas shipCanvas;
 
     bool oneTimeSet = false;
+
+    float spottedValue = 0;
+    float maxSpottedValue = 100;
+    bool spotted = false;
+
+
+
+    Text debugFIeld;
+
+    
 
     public int PassengersLoaded
     {
@@ -35,22 +46,46 @@ public class ship : MonoBehaviour {
        
     }
 
+    public float SpottedValue
+    {
+        get
+        {
+            return spottedValue;
+        }
+
+        set
+        {
+
+            spottedValue = value;
+            spottedValue = Mathf.Clamp(spottedValue, 0, maxSpottedValue);
+            shipCanvas.GetComponent<ShipText>().SetSliderValue(spottedValue);
+            if (spottedValue == maxSpottedValue)
+            {
+                DestroyMe();
+            }
+        }
+    }
+    
+
     void Start ()
     {
+        myRig = GetComponent<Rigidbody2D>();
+      //  myRig.WakeUp();
         myManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         awarenessPerDeath = (int)myManager.AwarenessPerPassengerDead;
         shipCanvas = transform.GetChild(0).GetComponent<Canvas>();
        
         shipCanvas.transform.eulerAngles = new Vector3(0, 0, 0);
-        
-      
 
-       
+        debugFIeld = GameObject.Find("DebugBox").GetComponent<Text>();
+        SpottedValue = spottedValue;
+
     }
 	
 	
 	void Update ()
     {
+      //  debugFIeld.text = spottedValue.ToString();
 
         if (oneTimeSet == false)
         {
@@ -74,16 +109,24 @@ public class ship : MonoBehaviour {
           
         }
         transform.LookAt(myParentPath.transform.GetChild(nexWayPoint).position);
-        transform.Translate(0,0, speed * Time.deltaTime);
-	}
+          transform.Translate(0,0, speed * Time.deltaTime);
+       
 
+    }
+    void FixedUpdate()
+    {
+     //   myRig.MovePosition(transform.position + transform.forward * speed * Time.deltaTime);
+    }
     public void ReducePassengers()
     {
-        IncreaseAwareness(passengersLoaded);
-        passengersLoaded = 0;
-        shipCanvas.GetComponent<ShipText>().SetShipText(passengersLoaded.ToString());
-        setSpeed(originSpeed);
-
+        if (passengersLoaded > 0)
+        {
+            IncreaseAwareness(10);
+            passengersLoaded -= 10;
+            passengersLoaded = Mathf.Clamp(passengersLoaded, 0, 100);
+            shipCanvas.GetComponent<ShipText>().SetShipText(passengersLoaded.ToString());
+            setSpeed(originSpeed);
+        }
     }
 
     public void ShipRefund(int refund)
@@ -97,19 +140,26 @@ public class ship : MonoBehaviour {
         despawnPoint = myParentPath.transform.GetChild(childItems - 1).position;
     }
 
+    /*
     void OnTriggerEnter2D(Collider2D other)
     {
-
+       
         if (other.gameObject.tag == "Enemy")
         {
-            Instantiate(Resources.Load("ShipDownParticle"), transform.position, Quaternion.identity);
-            IncreaseAwareness(passengersLoaded);
-            Destroy(shipCanvas);
-            Destroy(gameObject);
+           
           
         }
+       
     }
+    */
 
+    public void DestroyMe()
+    {
+        Instantiate(Resources.Load("ShipDownParticle"), transform.position, Quaternion.identity);
+        IncreaseAwareness(passengersLoaded);
+        Destroy(shipCanvas);
+        Destroy(gameObject);
+    }
     public void loadPassengers(int passengers)
     {
         passengersLoaded = passengers;
@@ -118,7 +168,7 @@ public class ship : MonoBehaviour {
 
     public void IncreaseAwareness(int passengers)
     {
-        myManager.AddAwareness(passengersLoaded * awarenessPerDeath);
+        myManager.AddAwareness(passengers * awarenessPerDeath);
     }
 
     public void setSpeed(float newSpeed)
@@ -151,4 +201,5 @@ public class ship : MonoBehaviour {
        
         return speedCoeff;
     }
+    
 }

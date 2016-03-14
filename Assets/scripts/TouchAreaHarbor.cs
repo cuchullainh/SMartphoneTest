@@ -28,7 +28,7 @@ public class TouchAreaHarbor : MonoBehaviour {
     Vector2 uiPosition;
     Camera myCamera;
     
-  float  setShipSpawnSPeed = 0.5f;
+  float  setShipSpawnSPeed = 0.35f;
 
     GameManager myManager;
     

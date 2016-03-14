@@ -25,7 +25,11 @@ public class GameManager : MonoBehaviour {
     float DPSTimer = 0;
     int DPS = 750;
     float securityTimer = 0;
-    int FPS = 5;
+    int FPS = 3;
+
+    float incRoutePoints = 3;
+    float routePointTimer = 0;
+    float routPointThreshold = 1;
 
     GameObject frontierSecColor;
  
@@ -33,6 +37,22 @@ public class GameManager : MonoBehaviour {
    
     float yellowThreshold = 0.4f;
     float redThreshold = 0.75f;
+
+    GameObject enemyCOntroller;
+
+    void increaseRoutePoints()
+    {
+        routePointTimer += Time.deltaTime;
+        if (routePointTimer >= routPointThreshold)
+        {
+            routePointTimer = 0;
+            foreach (Transform path in enemyCOntroller.transform)
+            {
+                path.GetComponent<EnemyPath>().UsagePoints += Random.Range(0, 600) / 100;
+            }
+        }
+
+    }
 
     public float MoneyPerPassenger
     {
@@ -95,7 +115,7 @@ public class GameManager : MonoBehaviour {
 
     void Start ()
     {
-        
+        enemyCOntroller = GameObject.Find("EnemyController");
         Highscore = GameObject.Find("HighScore").GetComponent<Text>();
         globalAwareNess = GameObject.Find("GlobalAwareness").GetComponent<Text>();
         Highscore.text = "Money " + money.ToString();
@@ -115,6 +135,7 @@ public class GameManager : MonoBehaviour {
 	
 	void Update ()
     {
+        increaseRoutePoints();
         DollarPerSecond();
         SecurityPerSecond();
 

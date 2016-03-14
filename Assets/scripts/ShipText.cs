@@ -5,11 +5,13 @@ using UnityEngine.UI;
 public class ShipText : MonoBehaviour {
 
     Text myText;
+    Slider spotSLider;
 
     void Start()
     {
-        myText = transform.GetChild(0).GetChild(0).GetComponent<Text>();
+        myText = transform.FindChild("Button").GetChild(0).GetComponent<Text>();
         myText.text = transform.parent.GetComponent<ship>().PassengersLoaded.ToString();
+        spotSLider = transform.FindChild("SpotSLider").GetComponent<Slider>();
     }
 
 
@@ -23,6 +25,9 @@ public class ShipText : MonoBehaviour {
         myText.text = aText;
       }
 
-
+    public void SetSliderValue(float Value)
+    {
+        spotSLider.value = Value;
+    }
 
 }

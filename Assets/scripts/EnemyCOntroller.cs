@@ -35,7 +35,7 @@ public class EnemyCOntroller : MonoBehaviour {
 
 	void Update ()
     {
-       // print(currentMaxShipsFromAwareness);
+      
         spawnTimer += Time.deltaTime;
         if (spawnTimer >= spawnInterval )
         {
@@ -50,6 +50,7 @@ public class EnemyCOntroller : MonoBehaviour {
                 // spawnInterval = Random.Range(100, 1000) / 100;
                 //float seed = Random.Range(0, 1000);
                 // float RandomSpeed = Mathf.Lerp(0.4f, 1.5f, seed / 1000);
+
                 float speed = Mathf.Lerp(minSpeed, maxSpeed, myManager.Awareness / myManager.MaxAwareNess);
 
                 bool RandomDir;
