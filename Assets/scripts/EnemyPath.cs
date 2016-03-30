@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class EnemyPath : MonoBehaviour {
 
@@ -7,6 +8,7 @@ public class EnemyPath : MonoBehaviour {
      float timer = 0;
     float reduceThreshold = 1;
     float reducePPintervall = 3;
+    Text debugFIeld;
 
     public float UsagePoints
     {
@@ -23,14 +25,14 @@ public class EnemyPath : MonoBehaviour {
 
     void Start ()
     {
-	
-	}
+        debugFIeld = GameObject.Find("DebugBox").GetComponent<Text>();
+    }
 	
 	
 	void Update ()
     {
         reducePoints();
-        print(usagePoints);
+      
     }
 
 

@@ -27,37 +27,62 @@ public class TouchAreaHarbor : MonoBehaviour {
     int shipPawn = 5000;
     Vector2 uiPosition;
     Camera myCamera;
-    
-  float  setShipSpawnSPeed = 0.35f;
+
+    public GameObject connRoute0 = null;
+    public GameObject connRoute1 = null;
+    public GameObject connRoute2 = null;
+
+    float  setShipSpawnSPeed = 0.3f;
 
     GameManager myManager;
     
 
-   // int costPerPassenger = 50;
+  
     int passengersLoaded;
 
-    
+    float routeIncrease = 10;
+
+    void incRoutePoints(float rpoints)
+    {
+        if (connRoute0 != null)
+        {
+            connRoute0.GetComponent<EnemyPath>().UsagePoints += rpoints;
+           
+        }
+        if (connRoute1 != null)
+        {
+            connRoute1.GetComponent<EnemyPath>().UsagePoints += rpoints;
+           
+        }
+        if (connRoute2 != null)
+        {
+            connRoute2.GetComponent<EnemyPath>().UsagePoints += rpoints;
+          
+        }
+    }
 
     void Start ()
     {
-         DebugBox = GameObject.Find("DebugBox").gameObject.GetComponent<Text>();
         myManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         myText = transform.GetChild(0).GetComponent<Text>();
-        // InvokeRepeating("SpawnShip", 0, 0.5f);
+       
         moneyPerPassenger = (int)myManager.MoneyPerPassenger;
         myCamera = Camera.main;
         uiPosition = myCamera.WorldToScreenPoint(gameObject.transform.position);
+
+        DebugBox = GameObject.Find("DebugBox").gameObject.GetComponent<Text>();
     }
 
     void SpawnShip()
     {
-     //   myText.text = "ShipStart";
+        incRoutePoints(routeIncrease);
         myManager.earnMoney(moneyPerPassenger * passengersLoaded);
         GameObject go = (GameObject)Instantiate(Resources.Load("Ship"), transform.parent.parent.FindChild("ShipSpawn").position, Quaternion.identity);
         go.GetComponent<ship>().SetPath(transform.parent.parent.FindChild("Route").gameObject);
         go.GetComponent<ship>().loadPassengers(passengersLoaded);
         go.GetComponent<ship>().setSpeed(setShipSpawnSPeed);
         go.GetComponent<ship>().ShipRefund(shipPawn);
+        myManager.ShipSpawned(go);
         passengersLoaded = 0;
         myManager.spentMoney(shipPawn);
     }
@@ -125,7 +150,7 @@ public class TouchAreaHarbor : MonoBehaviour {
             if (EventSystem.current.IsPointerOverGameObject(myFIngerID))
             {
                
-               // DebugBox.text =  "transformpos = " + uiPosition + "tpos = " + myTouch.position;
+              
                     if (Vector2.Distance(myTouch.position,uiPosition) <= 50 )
                 {
                     iWasTouched = true;

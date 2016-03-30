@@ -9,23 +9,57 @@ public class EnemyShip : MonoBehaviour {
     GameObject myParentPath;
     Vector3 despawnPoint;
     float speed = 1;
-    float baseSpeedKoefficient = 0.1f;
+    float baseSpeedKoefficient = 0.075f;
     int childItems;
     bool backWard = false;
     EnemyCOntroller myController;
-    List<GameObject> closeShips = new List<GameObject>();
+    //List<GameObject> closeShips = new List<GameObject>();
     Text debugFIeld;
     float spotTimer = 0;
-    float spotIncBase = 0.025f;
-    Rigidbody2D myRig;
+    float spotIncBase = 0.035f;
+    //Rigidbody2D myRig;
+
+    List<GameObject> playerShips = new List<GameObject>();
+    float spotDistance = 0.9f;
+
+    void OnEnable()
+    {
+        
+        GameManager.OnPlayerSpawn += ActualizePlayerList;
+    }
 
 
+    void OnDisable()
+    {
+        GameManager.OnPlayerSpawn -= ActualizePlayerList;
+    }
 
+    void spotPlayers()
+    {
+        spotTimer += Time.deltaTime;
+        if (spotTimer >= 0.1f)
+        {
+            spotTimer = 0;
+
+            foreach (GameObject go in playerShips)
+            {
+                if (Vector2.Distance(transform.position, go.transform.position) < spotDistance)
+                {
+                    go.GetComponent<ship>().SpottedValue +=  spotIncBase * (go.GetComponent<ship>().PassengersLoaded);
+                }
+            }
+        }
+        
+    }
+
+    void ActualizePlayerList(List<GameObject> ligo)
+    {
+        playerShips = ligo;
+    }
 
     void Start ()
     {
-        myRig = GetComponent<Rigidbody2D>();
-      //  myRig.WakeUp(); 
+      
         myController = GameObject.Find("EnemyController").gameObject.GetComponent<EnemyCOntroller>();
         debugFIeld = GameObject.Find("DebugBox").GetComponent<Text>();
     }
@@ -34,6 +68,7 @@ public class EnemyShip : MonoBehaviour {
 	void Update ()
     {
         spotPlayers();
+
         if (backWard == false)
         {
             if (Vector3.Distance(transform.position, myParentPath.transform.GetChild(nexWayPoint).position) <= 0.1f)
@@ -48,7 +83,7 @@ public class EnemyShip : MonoBehaviour {
             }
 
             transform.LookAt(myParentPath.transform.GetChild(nexWayPoint).position);
-         //   transform.Translate(0, 0, speed * baseSpeedKoefficient * Time.deltaTime);
+            transform.Translate(0, 0, speed * baseSpeedKoefficient * Time.deltaTime);
         }
         else
         {
@@ -68,14 +103,11 @@ public class EnemyShip : MonoBehaviour {
             }
 
             transform.LookAt(myParentPath.transform.GetChild(nexWayPoint).position);
-         //   transform.Translate(0, 0, speed * baseSpeedKoefficient *Time.deltaTime);
+            transform.Translate(0, 0, speed * baseSpeedKoefficient *Time.deltaTime);
         }
     }
 
-    void FixedUpdate()
-    {
-        myRig.MovePosition(transform.position + transform.forward * speed * baseSpeedKoefficient *  Time.deltaTime);
-    }
+   
     public void SetPath(GameObject parent)
     {
         myParentPath = parent;
@@ -111,49 +143,8 @@ public class EnemyShip : MonoBehaviour {
         myController.ShipCounter--;
     }
 
-    void OnTriggerEnter2D(Collider2D other)
-    {
+    
 
-        if (other.gameObject.tag == "Player")
-        {
-            closeShips.Add(other.gameObject);
-          //  debugFIeld.text = closeShips.Count.ToString();
-        }
-
-    }
-    void OnTriggerExit2D(Collider2D other)
-    {
-
-        if (other.gameObject.tag == "Player")
-        {
-            closeShips.Remove(other.gameObject);
-          //  debugFIeld.text = closeShips.Count.ToString();
-        }
-
-    }
-    void spotPlayers()
-    {
-       
-            spotTimer += Time.deltaTime;
-            if (spotTimer >= 0.1f)
-            {
-                spotTimer = 0;
-                
-                for (int a = 0; a < closeShips.Count; a++)
-                {
-
-                    if (closeShips[a].GetComponent(typeof(ship)))
-                    {
-                        closeShips[a].GetComponent<ship>().SpottedValue += spotIncBase * (closeShips[a].GetComponent<ship>().PassengersLoaded);
-                    }
-                    else
-                    {
-                        closeShips.Remove(closeShips[a]);
-                    }
-                }
-            }
-        
-    }
 }
 
 

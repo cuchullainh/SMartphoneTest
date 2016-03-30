@@ -6,7 +6,7 @@ public class ParticleDetroy : MonoBehaviour {
 
 	void Start ()
     {
-        Invoke("DestroyMe",6);
+        Invoke("DestroyMe",3);
 	}
 	
 	

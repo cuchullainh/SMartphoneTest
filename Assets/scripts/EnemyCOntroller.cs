@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class EnemyCOntroller : MonoBehaviour {
 
@@ -12,6 +13,8 @@ public class EnemyCOntroller : MonoBehaviour {
     int currentMaxShipsFromAwareness;
     float minSpeed = 1f;
     float maxSpeed = 2f;
+  
+    Text debugFIeld;
 
 
     public int ShipCounter
@@ -30,6 +33,7 @@ public class EnemyCOntroller : MonoBehaviour {
     void Start ()
     {
         myManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        debugFIeld = GameObject.Find("DebugBox").GetComponent<Text>();
     }
 	
 
@@ -42,10 +46,24 @@ public class EnemyCOntroller : MonoBehaviour {
             currentMaxShipsFromAwareness =(int) Mathf.Lerp(minShips, maxShips, myManager.Awareness / myManager.MaxAwareNess);
             if (shipCounter < currentMaxShipsFromAwareness)
             {
-                float routeSeed = Random.Range(0, 1000);
-                float numberOfRoutes = (float)transform.childCount;
-                float randomRoute = Mathf.Lerp(0, numberOfRoutes - 1, routeSeed / 1000);
-                int round = Mathf.RoundToInt(randomRoute);
+                float highestPoints = 0;
+                int tempRoute = 0;
+
+                for (int b = 0; b < transform.childCount; b++)
+                {
+                   
+                    if (highestPoints < transform.GetChild(b).GetComponent<EnemyPath>().UsagePoints)
+                    {
+                        highestPoints = transform.GetChild(b).GetComponent<EnemyPath>().UsagePoints;
+                        tempRoute = b;
+                    }
+                }
+             
+              //  float routeSeed = Random.Range(0, 1000);
+              
+                //float numberOfRoutes = (float)transform.childCount;
+             //   float randomRoute = Mathf.Lerp(0, numberOfRoutes - 1, routeSeed / 1000);
+               // int round = Mathf.RoundToInt(randomRoute);
 
                 // spawnInterval = Random.Range(100, 1000) / 100;
                 //float seed = Random.Range(0, 1000);
@@ -65,7 +83,7 @@ public class EnemyCOntroller : MonoBehaviour {
                     RandomDir = true;
                 }
                 spawnTimer = 0;
-                SpawnEnemy(round, RandomDir, speed);
+                SpawnEnemy(tempRoute, RandomDir, speed);
             }
         }
     }
@@ -73,6 +91,9 @@ public class EnemyCOntroller : MonoBehaviour {
 
     void SpawnEnemy(int route,bool direction, float speed)
     {
+       // transform.GetChild(route).GetComponent<EnemyPath>().UsagePoints += routeIncrease;
+      //  debugFIeld.text = transform.GetChild(route).GetComponent<EnemyPath>().UsagePoints.ToString();
+
         ShipCounter++;
         Vector3 StartPOint;
         bool routeDirection = direction;

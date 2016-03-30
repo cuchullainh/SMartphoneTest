@@ -262,6 +262,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b26d22cb7fc32e94588b35dfa70f3702, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  connRoute0: {fileID: 1977987665}
+  connRoute1: {fileID: 0}
+  connRoute2: {fileID: 0}
 --- !u!114 &33971905
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1974,6 +1977,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b26d22cb7fc32e94588b35dfa70f3702, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  connRoute0: {fileID: 1713011212}
+  connRoute1: {fileID: 0}
+  connRoute2: {fileID: 0}
 --- !u!114 &664641153
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4079,7 +4085,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
 --- !u!1 &1249167135
 GameObject:
   m_ObjectHideFlags: 0
@@ -5905,6 +5911,14 @@ Prefab:
       propertyPath: m_LocalPosition.y
       value: -0.18
       objectReference: {fileID: 0}
+    - target: {fileID: 11453620, guid: 928695ebb0bb17244a2eb6805c5cdc41, type: 2}
+      propertyPath: connRoute0
+      value: 
+      objectReference: {fileID: 1977987665}
+    - target: {fileID: 11453620, guid: 928695ebb0bb17244a2eb6805c5cdc41, type: 2}
+      propertyPath: connRoute1
+      value: 
+      objectReference: {fileID: 1713011212}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 928695ebb0bb17244a2eb6805c5cdc41, type: 2}
   m_IsPrefabParent: 0

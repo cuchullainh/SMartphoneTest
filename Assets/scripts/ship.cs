@@ -3,13 +3,14 @@ using System.Collections;
 using UnityEngine.UI;
 
 public class ship : MonoBehaviour {
+
     int nexWayPoint = 0;
     GameObject myParentPath;
     int childItems;
     Vector3 despawnPoint;
     int passengersLoaded;
     GameManager myManager;
-    //int livingPassengersValue = 100;
+ 
     float speed;
     int awarenessPerDeath;
     int shipRefund = 0;
@@ -30,11 +31,29 @@ public class ship : MonoBehaviour {
     float maxSpottedValue = 100;
     bool spotted = false;
 
-
+    float drownPercentage = 5;
+    float drownTimer = 0;
 
     Text debugFIeld;
 
-    
+    void Drown()
+    {
+        drownTimer += Time.deltaTime;
+
+        if (drownTimer >= 1)
+        {
+            drownTimer = 0;
+
+            float rng = Random.Range(0, 1000) / 10;
+            debugFIeld.text = rng.ToString();
+           
+            if (rng <= drownPercentage)
+            {
+
+                DestroyMe();
+            }
+        }
+    }
 
     public int PassengersLoaded
     {
@@ -69,8 +88,7 @@ public class ship : MonoBehaviour {
 
     void Start ()
     {
-        myRig = GetComponent<Rigidbody2D>();
-      //  myRig.WakeUp();
+      
         myManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         awarenessPerDeath = (int)myManager.AwarenessPerPassengerDead;
         shipCanvas = transform.GetChild(0).GetComponent<Canvas>();
@@ -80,12 +98,14 @@ public class ship : MonoBehaviour {
         debugFIeld = GameObject.Find("DebugBox").GetComponent<Text>();
         SpottedValue = spottedValue;
 
+       
+      
     }
 	
 	
 	void Update ()
     {
-      //  debugFIeld.text = spottedValue.ToString();
+        Drown();
 
         if (oneTimeSet == false)
         {
@@ -102,21 +122,20 @@ public class ship : MonoBehaviour {
         }
         if (Vector3.Distance(transform.position, despawnPoint) <= 0.1f)
         {
-            //doSomethingwhenShipReachesTarget
+            
+            myManager.shipDespawned(gameObject);
             myManager.earnMoney(shipRefund);
             Destroy(shipCanvas);
             Destroy(gameObject);
           
         }
+
         transform.LookAt(myParentPath.transform.GetChild(nexWayPoint).position);
           transform.Translate(0,0, speed * Time.deltaTime);
        
 
     }
-    void FixedUpdate()
-    {
-     //   myRig.MovePosition(transform.position + transform.forward * speed * Time.deltaTime);
-    }
+  
     public void ReducePassengers()
     {
         if (passengersLoaded > 0)
@@ -140,21 +159,11 @@ public class ship : MonoBehaviour {
         despawnPoint = myParentPath.transform.GetChild(childItems - 1).position;
     }
 
-    /*
-    void OnTriggerEnter2D(Collider2D other)
-    {
-       
-        if (other.gameObject.tag == "Enemy")
-        {
-           
-          
-        }
-       
-    }
-    */
+   
 
     public void DestroyMe()
     {
+        myManager.shipDespawned(gameObject);
         Instantiate(Resources.Load("ShipDownParticle"), transform.position, Quaternion.identity);
         IncreaseAwareness(passengersLoaded);
         Destroy(shipCanvas);
@@ -176,7 +185,7 @@ public class ship : MonoBehaviour {
         
         originSpeed = newSpeed;
         calcSpeed = originSpeed;
-        // float calcSpeed = Mathf.Lerp(0.1f, 1, newSpeed/800);
+       
         speed = calcSpeed* LoadedColorNSpeed();
     }
 

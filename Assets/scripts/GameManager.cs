@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 
@@ -32,13 +33,32 @@ public class GameManager : MonoBehaviour {
     float routPointThreshold = 1;
 
     GameObject frontierSecColor;
- 
-   
-   
+
+    public delegate void PlayerSpawned(List<GameObject> plist);
+    public static event PlayerSpawned OnPlayerSpawn;
+
+
     float yellowThreshold = 0.4f;
     float redThreshold = 0.75f;
 
     GameObject enemyCOntroller;
+
+    List<GameObject> playerShips = new List<GameObject>();
+
+    Text debugFIeld;
+
+    public void ShipSpawned(GameObject go)
+    {
+        playerShips.Add(go);
+        OnPlayerSpawn(playerShips);
+    }
+
+    public void shipDespawned(GameObject go)
+    {
+        playerShips.Remove(go);
+        OnPlayerSpawn(playerShips);
+
+    }
 
     void increaseRoutePoints()
     {
@@ -128,24 +148,19 @@ public class GameManager : MonoBehaviour {
 
         frontierSecColor = awareNessBar.transform.FindChild("Fill Area").FindChild("Fill").gameObject;
         frontierSecColor.GetComponent<Image>().color = Color.green;
-
-
+        debugFIeld = GameObject.Find("DebugBox").GetComponent<Text>();
+       
     }
-	
-	
-	void Update ()
+    void TriggerEvent()
     {
-        increaseRoutePoints();
-        DollarPerSecond();
-        SecurityPerSecond();
-
         if (eventIsActive == false)
         {
             eventTimer += Time.deltaTime;
             if (eventTimer > eventPopUpCoolDown)
             {
                 eventTimer = 0;
-                EventProcc();
+                eventStarter.StartGameEvent();
+                eventIsActive = true;
             }
         }
         else
@@ -158,7 +173,17 @@ public class GameManager : MonoBehaviour {
                 eventIsActive = false;
             }
         }
-	}
+    }
+	
+	void Update ()
+    {
+        increaseRoutePoints();
+        DollarPerSecond();
+        SecurityPerSecond();
+        TriggerEvent();
+
+
+    }
 
     public void spentMoney(int value)
     {
@@ -217,21 +242,8 @@ public class GameManager : MonoBehaviour {
         AwarenessColor();
     }
 
-    void StartGameEvent()
-    {
-
-    }
-
-    void EventProcc()
-    {
-        float rand = Random.Range(0, MaxAwareNess);
-        if (rand < Awareness)
-        {
-            eventStarter.StartGameEvent();
-            eventIsActive = true;
-        }
-
-    }
+   
+ 
 
     void DollarPerSecond()
     {
