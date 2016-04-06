@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour {
     float eventTimer = 0;
     float eventPopUpCoolDown = 30;
     float currentEventTimer = 0;
-    float currentEventPopUpTime = 10;
+    float currentEventPopUpTime = 25;
     EventPopUpStarter eventStarter;
 
     float DPSTimer = 0;

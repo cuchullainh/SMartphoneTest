@@ -30,11 +30,17 @@ public class ship : MonoBehaviour {
     float spottedValue = 0;
     float maxSpottedValue = 100;
     bool spotted = false;
+  
 
     float drownPercentage = 5;
     float drownTimer = 0;
 
     Text debugFIeld;
+
+    public void setDrownChance(float chance)
+    {
+        drownPercentage = chance;
+    }
 
     void Drown()
     {
@@ -45,11 +51,9 @@ public class ship : MonoBehaviour {
             drownTimer = 0;
 
             float rng = Random.Range(0, 1000) / 10;
-            debugFIeld.text = rng.ToString();
            
             if (rng <= drownPercentage)
             {
-
                 DestroyMe();
             }
         }
@@ -98,20 +102,23 @@ public class ship : MonoBehaviour {
         debugFIeld = GameObject.Find("DebugBox").GetComponent<Text>();
         SpottedValue = spottedValue;
 
-       
-      
+        
+
     }
 	
 	
 	void Update ()
     {
-        Drown();
-
         if (oneTimeSet == false)
         {
+            setDrownChance(passengersLoaded / 20);
             shipCanvas.transform.SetParent(null);
             oneTimeSet = true;
         }
+        Drown();
+        debugFIeld.text = drownPercentage.ToString();
+
+     
         shipCanvas.transform.position = gameObject.transform.position;
      
 
