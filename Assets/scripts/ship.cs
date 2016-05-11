@@ -30,28 +30,74 @@ public class ship : MonoBehaviour {
     float spottedValue = 0;
     float maxSpottedValue = 100;
     bool spotted = false;
-  
 
-    float drownPercentage = 5;
+
+    float drownPercentage;
+    float defautDrownPercentage;
+
     float drownTimer = 0;
+    float drownCheckInterval = 2;
+
 
     Text debugFIeld;
 
-    public void setDrownChance(float chance)
+   
+
+    void OnEnable()
     {
-        drownPercentage = chance;
+        EventPopUpStarter.gameEventStarted += eventActive;
+        EventPopUpStarter.gameEventEnded += SetToDefaultParameters;
     }
+
+
+    void OnDisable()
+    {
+        EventPopUpStarter.gameEventStarted -= eventActive;
+        EventPopUpStarter.gameEventEnded -= SetToDefaultParameters;
+    }
+
+    void SetToDefaultParameters()
+    {
+        drownPercentage = defautDrownPercentage;
+        SetDefaultSpeed(originSpeed);
+    }
+
+    void eventActive(int currEvent,bool eventActive)
+    {
+        if (eventActive == true)
+        {
+            switch (currEvent)
+            {
+                case 0://storm
+                    drownPercentage = drownPercentage * 2;
+                    SetTempSpeedCoEff(0.5f);
+
+                    break;
+
+                case 1://heat/sun
+
+
+                    break;
+
+
+            }
+        }
+        
+    }
+
+   
 
     void Drown()
     {
         drownTimer += Time.deltaTime;
 
-        if (drownTimer >= 1)
+        if (drownTimer >= drownCheckInterval)
         {
             drownTimer = 0;
 
             float rng = Random.Range(0, 1000) / 10;
            
+
             if (rng <= drownPercentage)
             {
                 DestroyMe();
@@ -102,7 +148,7 @@ public class ship : MonoBehaviour {
         debugFIeld = GameObject.Find("DebugBox").GetComponent<Text>();
         SpottedValue = spottedValue;
 
-        
+       
 
     }
 	
@@ -111,12 +157,16 @@ public class ship : MonoBehaviour {
     {
         if (oneTimeSet == false)
         {
-            setDrownChance(passengersLoaded / 20);
+            defautDrownPercentage = passengersLoaded / 20;
+            drownPercentage = defautDrownPercentage;
             shipCanvas.transform.SetParent(null);
             oneTimeSet = true;
         }
+
+      
+
         Drown();
-        debugFIeld.text = drownPercentage.ToString();
+       
 
      
         shipCanvas.transform.position = gameObject.transform.position;
@@ -151,7 +201,7 @@ public class ship : MonoBehaviour {
             passengersLoaded -= 10;
             passengersLoaded = Mathf.Clamp(passengersLoaded, 0, 100);
             shipCanvas.GetComponent<ShipText>().SetShipText(passengersLoaded.ToString());
-            setSpeed(originSpeed);
+            SetDefaultSpeed(originSpeed);
         }
     }
 
@@ -187,13 +237,21 @@ public class ship : MonoBehaviour {
         myManager.AddAwareness(passengers * awarenessPerDeath);
     }
 
-    public void setSpeed(float newSpeed)
+    public void SetDefaultSpeed(float newSpeed)
     {
         
         originSpeed = newSpeed;
         calcSpeed = originSpeed;
        
         speed = calcSpeed* LoadedColorNSpeed();
+    }
+    public void SetTempSpeedCoEff(float newSpeed)
+    {
+
+       
+        calcSpeed = originSpeed*newSpeed;
+
+        speed = calcSpeed * LoadedColorNSpeed();
     }
 
     public float LoadedColorNSpeed()

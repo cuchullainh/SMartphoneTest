@@ -71,6 +71,8 @@ public class TouchAreaHarbor : MonoBehaviour {
         uiPosition = myCamera.WorldToScreenPoint(gameObject.transform.position);
 
         DebugBox = GameObject.Find("DebugBox").gameObject.GetComponent<Text>();
+
+       
     }
 
     void SpawnShip()
@@ -80,7 +82,7 @@ public class TouchAreaHarbor : MonoBehaviour {
         GameObject go = (GameObject)Instantiate(Resources.Load("Ship"), transform.parent.parent.FindChild("ShipSpawn").position, Quaternion.identity);
         go.GetComponent<ship>().SetPath(transform.parent.parent.FindChild("Route").gameObject);
         go.GetComponent<ship>().loadPassengers(passengersLoaded);
-        go.GetComponent<ship>().setSpeed(setShipSpawnSPeed);
+        go.GetComponent<ship>().SetDefaultSpeed(setShipSpawnSPeed);
         go.GetComponent<ship>().ShipRefund(shipPawn);
         myManager.ShipSpawned(go);
         passengersLoaded = 0;
