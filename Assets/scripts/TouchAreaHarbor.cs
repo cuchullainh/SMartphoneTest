@@ -36,8 +36,6 @@ public class TouchAreaHarbor : MonoBehaviour {
 
     GameManager myManager;
     
-
-  
     int passengersLoaded;
 
     float routeIncrease = 10;
