@@ -49,7 +49,8 @@ public class GameManager : MonoBehaviour {
 
     float monthlyTimer = 0;
     float monthlyInterval = 60;
-    GameObject reportScreen;
+
+    ReportScreen report;
 
     void MonthlyReportTime()
     {
@@ -57,19 +58,19 @@ public class GameManager : MonoBehaviour {
         if (monthlyTimer >= monthlyInterval)
         {
             monthlyTimer = 0;
-            Report();
+            report.Report();
         }
     }
-    void Report()
-    {
-        Time.timeScale = 0;
-        reportScreen.SetActive(true);
-    }
+    //void Report()
+    //{
+    //    Time.timeScale = 0;
+    //    reportScreen.SetActive(true);
+    //}
 
-    public void EndReport()
-        {
-        reportScreen.SetActive(false);
-        }
+    //public void EndReport()
+    //    {
+    //    reportScreen.SetActive(false);
+    //    }
 
     public void ShipSpawned(GameObject go)
     {
@@ -173,8 +174,8 @@ public class GameManager : MonoBehaviour {
         frontierSecColor = awareNessBar.transform.FindChild("Fill Area").FindChild("Fill").gameObject;
         frontierSecColor.GetComponent<Image>().color = Color.green;
         debugFIeld = GameObject.Find("DebugBox").GetComponent<Text>();
-        reportScreen = GameObject.Find("ReportScreen");
-        reportScreen.SetActive(false);
+        report = GameObject.Find("Canvas").transform.FindChild("ReportScreen").GetComponent<ReportScreen>();
+       
     }
     void TriggerEvent()
     {

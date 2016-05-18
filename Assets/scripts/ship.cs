@@ -41,14 +41,24 @@ public class ship : MonoBehaviour {
 
     Text debugFIeld;
 
-   
+    float abnutzung = 0;
+    GameObject originHarbor = null;
+
+   public void SetAbnutzung(float abn)
+    {
+        abnutzung = abn;
+    }
+
+    public void SetOriginHarbor(GameObject orgnharb)
+    {
+        originHarbor = orgnharb;
+    }
 
     void OnEnable()
     {
         EventPopUpStarter.gameEventStarted += eventActive;
         EventPopUpStarter.gameEventEnded += SetToDefaultParameters;
     }
-
 
     void OnDisable()
     {
@@ -98,10 +108,10 @@ public class ship : MonoBehaviour {
             float rng = Random.Range(0, 1000) / 10;
            
 
-            if (rng <= drownPercentage)
-            {
-                DestroyMe();
-            }
+            //if (rng <= drownPercentage)
+            //{
+            //    DestroyMe();
+            //}
         }
     }
 
@@ -124,7 +134,6 @@ public class ship : MonoBehaviour {
 
         set
         {
-
             spottedValue = value;
             spottedValue = Mathf.Clamp(spottedValue, 0, maxSpottedValue);
             shipCanvas.GetComponent<ShipText>().SetSliderValue(spottedValue);
@@ -134,11 +143,13 @@ public class ship : MonoBehaviour {
             }
         }
     }
-    
-
-    void Start ()
+    void setAbnutzungsBar()
     {
-      
+        shipCanvas.GetComponent<ShipText>().SetSliderValue(abnutzung);
+    }
+     
+    void Start ()
+    { 
         myManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         awarenessPerDeath = (int)myManager.AwarenessPerPassengerDead;
         shipCanvas = transform.GetChild(0).GetComponent<Canvas>();
@@ -146,15 +157,18 @@ public class ship : MonoBehaviour {
         shipCanvas.transform.eulerAngles = new Vector3(0, 0, 0);
 
         debugFIeld = GameObject.Find("DebugBox").GetComponent<Text>();
-        SpottedValue = spottedValue;
-
-       
-
+        SpottedValue = spottedValue; 
     }
-	
+
+    void SendBackAbnutzung()
+    {
+        originHarbor.GetComponent<TouchAreaHarbor>().SetAbnutzung(abnutzung);
+    }
 	
 	void Update ()
     {
+        setAbnutzungsBar();
+
         if (oneTimeSet == false)
         {
             defautDrownPercentage = passengersLoaded / 20;
@@ -163,12 +177,8 @@ public class ship : MonoBehaviour {
             oneTimeSet = true;
         }
 
-      
-
-        Drown();
-       
-
-     
+       // Drown();
+  
         shipCanvas.transform.position = gameObject.transform.position;
      
 
@@ -179,18 +189,15 @@ public class ship : MonoBehaviour {
         }
         if (Vector3.Distance(transform.position, despawnPoint) <= 0.1f)
         {
-            
+            SendBackAbnutzung();
             myManager.shipDespawned(gameObject);
             myManager.earnMoney(shipRefund);
             Destroy(shipCanvas);
             Destroy(gameObject);
-          
         }
 
         transform.LookAt(myParentPath.transform.GetChild(nexWayPoint).position);
           transform.Translate(0,0, speed * Time.deltaTime);
-       
-
     }
   
     public void ReducePassengers()
@@ -216,8 +223,6 @@ public class ship : MonoBehaviour {
         despawnPoint = myParentPath.transform.GetChild(childItems - 1).position;
     }
 
-   
-
     public void DestroyMe()
     {
         myManager.shipDespawned(gameObject);
@@ -229,7 +234,6 @@ public class ship : MonoBehaviour {
     public void loadPassengers(int passengers)
     {
         passengersLoaded = passengers;
-    
     }
 
     public void IncreaseAwareness(int passengers)
@@ -238,8 +242,7 @@ public class ship : MonoBehaviour {
     }
 
     public void SetDefaultSpeed(float newSpeed)
-    {
-        
+    {  
         originSpeed = newSpeed;
         calcSpeed = originSpeed;
        
@@ -247,8 +250,6 @@ public class ship : MonoBehaviour {
     }
     public void SetTempSpeedCoEff(float newSpeed)
     {
-
-       
         calcSpeed = originSpeed*newSpeed;
 
         speed = calcSpeed * LoadedColorNSpeed();
@@ -275,5 +276,6 @@ public class ship : MonoBehaviour {
        
         return speedCoeff;
     }
+    
     
 }

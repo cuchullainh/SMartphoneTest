@@ -54,23 +54,32 @@ public class TouchAreaHarbor : MonoBehaviour {
 
     float routeIncrease = 10;
 
+    bool Ship0 = true;
+    float ship0Abnutzung = 0;
+    bool ship0Destroyed = false;
+    float ship0CooldownTimer = 0;
+    float ship0cooldownIntervall = 20;
+    bool ship0inAction = false;
+
     void incRoutePoints(float rpoints)
     {
         if (connRoute0 != null)
         {
             connRoute0.GetComponent<EnemyPath>().UsagePoints += rpoints;
-           
         }
         if (connRoute1 != null)
         {
-            connRoute1.GetComponent<EnemyPath>().UsagePoints += rpoints;
-           
+            connRoute1.GetComponent<EnemyPath>().UsagePoints += rpoints;  
         }
         if (connRoute2 != null)
         {
             connRoute2.GetComponent<EnemyPath>().UsagePoints += rpoints;
-          
         }
+    }
+
+     public void SetAbnutzung(float abn)
+    {
+        ship0Abnutzung = abn;
     }
 
     void Start ()
@@ -84,9 +93,11 @@ public class TouchAreaHarbor : MonoBehaviour {
 
         DebugBox = GameObject.Find("DebugBox").gameObject.GetComponent<Text>();
 
+
         // targetHarbor = transform.parent.parent.FindChild("TargetHarbors").GetChild(0).gameObject;
         //targetHarbor1 = transform.parent.parent.FindChild("TargetHarbors").GetChild(1).gameObject;
         // targetHarbor = GameObject.Find("TargetHarbors").transform.GetChild(0).gameObject;
+
     }
 
     void SpawnShip()
@@ -98,11 +109,26 @@ public class TouchAreaHarbor : MonoBehaviour {
         go.GetComponent<ship>().loadPassengers(passengersLoaded);
         go.GetComponent<ship>().SetDefaultSpeed(setShipSpawnSPeed);
         go.GetComponent<ship>().ShipRefund(shipPawn);
-        myManager.ShipSpawned(go);
+        go.GetComponent<ship>().SetAbnutzung(ship0Abnutzung);
+        go.GetComponent<ship>().SetOriginHarbor(gameObject);
+    myManager.ShipSpawned(go);
         passengersLoaded = 0;
         myManager.spentMoney(shipPawn);
         isPassengersLoaded = false;
         targetHarborMarked = false;
+        ship0inAction = true;
+    }
+    void ship0OnCooldown()
+    {
+        if (ship0inAction == true)
+        {
+            ship0CooldownTimer += Time.deltaTime;
+            if (ship0CooldownTimer >= ship0cooldownIntervall)
+            {
+                ship0CooldownTimer = 0;
+                ship0inAction = false;
+            }
+        }
     }
 
     void MarkTargetHarbor()
@@ -110,7 +136,6 @@ public class TouchAreaHarbor : MonoBehaviour {
 
         if (isPassengersLoaded == true && isSliding == true && oHarborIsTouched == true)
         {
-         
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -140,8 +165,7 @@ public class TouchAreaHarbor : MonoBehaviour {
                 targetHarborMarked = false;
             }
             //    if (Vector2.Distance(myTouch.position, targetHarbor.transform.position) <= 50)
-            //{
-               
+            //{    
             //}
         }
     }
@@ -154,6 +178,7 @@ public class TouchAreaHarbor : MonoBehaviour {
         //    iWasTouchedLastUpdate = false;
         //}
 
+        ship0OnCooldown();
         MarkTargetHarbor();
 
         if (passengersLoaded >= 10)
@@ -197,7 +222,7 @@ public class TouchAreaHarbor : MonoBehaviour {
         {
             oHarborIsTouched = false;
 
-            if (targetHarborMarked && isPassengersLoaded )
+            if (targetHarborMarked && isPassengersLoaded && ship0inAction == false)
             {
                 SpawnShip();
                 passengersLoaded = 0;
