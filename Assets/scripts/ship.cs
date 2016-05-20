@@ -162,7 +162,7 @@ public class ship : MonoBehaviour {
 
     void SendBackAbnutzung()
     {
-        originHarbor.GetComponent<TouchAreaHarbor>().SetAbnutzung(abnutzung);
+        originHarbor.GetComponent<TouchAreaHarbor>().setAbnutzung0(abnutzung);
     }
 	
 	void Update ()
