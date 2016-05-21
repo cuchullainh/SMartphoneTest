@@ -59,61 +59,80 @@ public class TouchAreaHarbor : MonoBehaviour {
     float ship0Abnutzung = 0;
     bool ship0Destroyed = false;
     float ship0CooldownTimer = 0;
-    float ship0cooldownIntervall = 20;
+    float ship0cooldownIntervall = 10;
     bool ship0inAction = false;
     Slider ship0AbnutzungBar;
+    bool ship0Underway = false;
 
     Text myText2;
    // bool Ship2 = true;
     float ship2Abnutzung = 0;
     bool ship2Destroyed = false;
     float ship2CooldownTimer = 0;
-    float ship2cooldownIntervall = 20;
+    float ship2cooldownIntervall = 10;
     bool ship2inAction = false;
     Slider ship2AbnutzungBar;
+    bool ship2Underway = false;
 
     Text myText3;
    // bool Ship3 = true;
     float ship3Abnutzung = 0;
     bool ship3Destroyed = false;
     float ship3CooldownTimer = 0;
-    float ship3cooldownIntervall = 20;
+    float ship3cooldownIntervall = 10;
     bool ship3inAction = false;
     Slider ship3AbnutzungBar;
+    bool ship3Underway = false;
+
+    int currentShip = 0;
+
+    AbnutzungManager myDmgManager;
 
     void ShowShipText()
     {
-       
-        if (ship0inAction == true)
+        ship0AbnutzungBar.value = ship0Abnutzung;
+        ship2AbnutzungBar.value = ship2Abnutzung;
+        ship3AbnutzungBar.value = ship3Abnutzung;
+
+        //DebugBox.text = ship0Abnutzung.ToString();
+
+        if (ship0inAction == true && ship0Underway == false)
         {
             myText.text = "Ship1 rdy in " + Mathf.RoundToInt(ship0cooldownIntervall - ship0CooldownTimer) + "sek";
         }
-        else
+        else if (ship0inAction == false && ship0Underway == false)
         {
             myText.text = "Ship1 is Rdy";
         }
-        ship0AbnutzungBar.value = ship0Abnutzung;
-
-      
-        ship0AbnutzungBar.value = ship0Abnutzung;
-        if (ship2inAction == true)
+        else if (ship0inAction == true && ship0Underway == true)
+        {
+            myText.text = "Ship1 is in Action";
+        }
+       
+        if (ship2inAction == true && ship2Underway == false)
         {
             myText2.text = "Ship2 rdy in " + Mathf.RoundToInt(ship2cooldownIntervall - ship2CooldownTimer) + "sek";
         }
-        else
+        else if (ship2inAction == false && ship2Underway == false)
         {
             myText2.text = "Ship2 is Rdy";
         }
+        else if (ship2inAction == true && ship2Underway == true)
+        {
+            myText2.text = "Ship2 is in Action";
+        }
 
-      
-        ship0AbnutzungBar.value = ship0Abnutzung;
-        if (ship3inAction == true)
+        if (ship3inAction == true && ship3Underway == false)
         {
             myText3.text = "Ship3 rdy in " + Mathf.RoundToInt(ship3cooldownIntervall - ship3CooldownTimer) + "sek";
         }
-        else
+        else if (ship3inAction == false && ship3Underway == false)
         {
             myText3.text = "Ship3 is Rdy";
+        }
+        else if (ship3inAction == true && ship3Underway == true)
+        {
+            myText3.text = "Ship3 is in Action";
         }
     }
 
@@ -167,6 +186,14 @@ public class TouchAreaHarbor : MonoBehaviour {
 
         DebugBox = GameObject.Find("DebugBox").gameObject.GetComponent<Text>();
 
+      //  myDmgManager = GameObject.Find("GameManager").GetComponent<AbnutzungManager>();
+
+        //float[] testfield = new float[2];
+        //testfield = myDmgManager.CalcDmg(75,50, 100);
+        //print(testfield[0] + " lost passengers");
+        //print(testfield[1] + " lost zustnad");
+
+      //  DebugBox.text = testfield[0].ToString() + "  " + testfield[1].ToString();
 
         // targetHarbor = transform.parent.parent.FindChild("TargetHarbors").GetChild(0).gameObject;
         //targetHarbor1 = transform.parent.parent.FindChild("TargetHarbors").GetChild(1).gameObject;
@@ -183,33 +210,40 @@ public class TouchAreaHarbor : MonoBehaviour {
         go.GetComponent<ship>().loadPassengers(passengersLoaded);
         go.GetComponent<ship>().SetDefaultSpeed(setShipSpawnSPeed);
         go.GetComponent<ship>().ShipRefund(shipPawn);
-        go.GetComponent<ship>().SetAbnutzung(ship0Abnutzung);
         go.GetComponent<ship>().SetOriginHarbor(gameObject);
+
         myManager.ShipSpawned(go);
         passengersLoaded = 0;
         myManager.spentMoney(shipPawn);
         isPassengersLoaded = false;
         targetHarborMarked = false;
 
-        if (ship0inAction == false)
+        if (ship0inAction == false && ship0Underway == false)
         {
             ship0inAction = true;
+                 go.GetComponent<ship>().SetAbnutzung(ship0Abnutzung);
+              go.GetComponent<ship>().setShipNumber(1);
+            ship0Underway = true;
         }
-        else if(ship0inAction == true && ship2inAction == false)
+        else if((ship0inAction == true || ship0Underway == true) && (ship2inAction == false && ship2Underway == false))
         {
-
             ship2inAction = true;
+                   go.GetComponent<ship>().SetAbnutzung(ship2Abnutzung);
+              go.GetComponent<ship>().setShipNumber(2);
+            ship2Underway = true;
         }
-        else if (ship0inAction == true && ship2inAction == true && ship3inAction == false)
+        else if ((ship0inAction == true || ship0Underway == true )&& (ship2inAction == true || ship2Underway == true) && (ship3inAction == false && ship3Underway == false))
         {
-
             ship3inAction = true;
+                   go.GetComponent<ship>().SetAbnutzung(ship3Abnutzung);
+              go.GetComponent<ship>().setShipNumber(3);
+            ship3Underway = true;
         }
 
     }
     void ShipCoolDown()
     {
-        if (ship0inAction == true)
+        if (ship0inAction == true && ship0Underway == false)
         {
             ship0CooldownTimer += Time.deltaTime;
             if (ship0CooldownTimer >= ship0cooldownIntervall)
@@ -219,7 +253,7 @@ public class TouchAreaHarbor : MonoBehaviour {
             }
         }
 
-        if (ship2inAction == true)
+        if (ship2inAction == true && ship2Underway == false)
         {
             ship2CooldownTimer += Time.deltaTime;
             if (ship2CooldownTimer >= ship2cooldownIntervall)
@@ -229,7 +263,7 @@ public class TouchAreaHarbor : MonoBehaviour {
             }
         }
 
-        if (ship3inAction == true)
+        if (ship3inAction == true && ship3Underway == false)
         {
             ship3CooldownTimer += Time.deltaTime;
             if (ship3CooldownTimer >= ship0cooldownIntervall)
@@ -240,6 +274,22 @@ public class TouchAreaHarbor : MonoBehaviour {
         }
     }
 
+    public void ShipNotUnderway(int shpnmr)
+    {
+        if (shpnmr == 1)
+        {
+            ship0Underway = false;
+        }
+        else if (shpnmr == 2)
+        {
+            ship2Underway = false;
+
+        }
+        else if (shpnmr == 3)
+        {
+            ship3Underway = false;
+        }
+    }
     void MarkTargetHarbor()
     {
 
@@ -309,15 +359,15 @@ public class TouchAreaHarbor : MonoBehaviour {
 
          
 
-            if (ship0inAction == false)
+            if (ship0inAction == false && ship0Underway == false)
             {
                 myText.text = passengersInt.ToString() + " passengers loaded";
             }
-            else if (ship0inAction == true && ship2inAction == false)
+            else if ((ship0inAction == true || ship0Underway == false) && (ship2inAction == false && ship2Underway == false))
             {
                 myText2.text = passengersInt.ToString() + " passengers loaded";
             }
-            else if (ship0inAction == true && ship2inAction == true && ship3inAction == false)
+            else if ((ship0inAction == true || ship0Underway == true) && (ship2inAction == true || ship2Underway == true) &&  (ship3inAction == false && ship3Underway == false))
             {
                 myText3.text = passengersInt.ToString() + " passengers loaded";
             }

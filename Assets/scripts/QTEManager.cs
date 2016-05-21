@@ -106,7 +106,7 @@ public class QTEManager : MonoBehaviour {
             {
                 if (Vector2.Distance(myTouch.position, qteChoice1.transform.position) <= 75)
                 {
-                    DebugBox.text = "1";
+                  //  DebugBox.text = "1";
                     markCHoice1 = false;
                 }
             }
@@ -114,7 +114,7 @@ public class QTEManager : MonoBehaviour {
             {
                 if (Vector2.Distance(myTouch.position, qteChoice2.transform.position) <= 75)
                 {
-                    DebugBox.text = "2";
+                  //  DebugBox.text = "2";
                     markCHoice2 = false;
                 }
             }
@@ -122,7 +122,7 @@ public class QTEManager : MonoBehaviour {
             {
                 if (Vector2.Distance(myTouch.position, qteChoice3.transform.position) <= 75)
                 {
-                    DebugBox.text = "3";
+                   // DebugBox.text = "3";
                     markCHoice3 = false;
                 }
             }
