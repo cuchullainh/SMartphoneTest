@@ -42,8 +42,6 @@ public class EventPopUpStarter : MonoBehaviour {
         eventEffects = GameObject.Find("EventEffects");
 
         InvokeRepeating("BroadcastEventStatus", 1, 0.5f);
-      
-
     }
   
 

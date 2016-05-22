@@ -25,8 +25,12 @@ public class QTEManager : MonoBehaviour {
     bool markCHoice3 = false;
 
     bool qteIsHit = false;
+    bool qteWasActivated = false;
+    int eventType = 0;
+    GameObject shipID;
 
-  //  bool intitia
+    //  bool intitia
+
   
     void Start ()
     {
@@ -39,16 +43,65 @@ public class QTEManager : MonoBehaviour {
 
         //   uiPosition = myCamera.WorldToScreenPoint(gameObject.transform.position);
         DebugBox = GameObject.Find("DebugBox").gameObject.GetComponent<Text>();
+
+
     }
 	
-	 public void StartQTevent()
+	 public void StartQTevent(int eventTpe, GameObject originShip,Vector3 pos)
     {
+        // 0 = enemyClose
        
+        qteActivate.SetActive(true);
+        qTEChoices.SetActive(true);
+        //gameObject.transform.position = pos;
+        qteWasActivated = true;
+        eventType = eventTpe;
+        SwitchToEventType();
+        shipID = originShip;
+    }
+
+    void SwitchToEventType()
+    {
+        switch (eventType)
+        {
+            // encounter
+            case 0:
+                {
+                   
+                    qteChoice1.SetActive(true);
+                    qteChoice2.SetActive(true);
+                    qteChoice1.transform.GetChild(0).GetComponent<Text>().text = "über Bord werfen";
+                    qteChoice2.transform.GetChild(0).GetComponent<Text>().text = "Bestechung";
+                    qteChoice3.SetActive(false);
+
+                    break;
+                }
+
+           // storm
+            case 1:
+                {
+                    qteChoice1.SetActive(true);
+                   
+                    qteChoice1.transform.GetChild(0).GetComponent<Text>().text = "auf See warten";
+                    qteChoice2.SetActive(false);
+                    qteChoice3.SetActive(false);
+                    break;
+                }
+
+        }
+    }
+
+    public void StopQTEevent()
+    {
+        qteActivate.SetActive(false);
+        qTEChoices.SetActive(false);
+        qteWasActivated = false;
     }
 
     public void ShowQTEChoices()
     {
-        if (qteIsHit == true)
+
+        if (qteIsHit == true && qteWasActivated == true)
         {
             qTEChoices.SetActive(true);
 
@@ -68,7 +121,6 @@ public class QTEManager : MonoBehaviour {
                 {
                     markCHoice3 = true;
                 }
-               
             }
         }
 
@@ -77,7 +129,6 @@ public class QTEManager : MonoBehaviour {
 
     public void HideQTEChoices()
     {
-
         qTEChoices.SetActive(false);
     }
 
@@ -106,24 +157,85 @@ public class QTEManager : MonoBehaviour {
             {
                 if (Vector2.Distance(myTouch.position, qteChoice1.transform.position) <= 75)
                 {
-                  //  DebugBox.text = "1";
+                
                     markCHoice1 = false;
+                    StopQTEevent();
+                    switch (eventType)
+                    {
+
+                        // encounter  
+                        case 0:
+                            {
+                                // über bord
+                                shipID.GetComponent<ship>().ReducePassengers(50);
+                                break;
+                            }
+
+                        //storm
+                        case 1:
+                            {
+                                //holdSpeed
+                                shipID.GetComponent<ship>().HoldShip();
+
+                                break;
+                            }
+
+                    }
                 }
             }
             if (markCHoice2 == true)
             {
                 if (Vector2.Distance(myTouch.position, qteChoice2.transform.position) <= 75)
                 {
-                  //  DebugBox.text = "2";
+               
                     markCHoice2 = false;
+                    StopQTEevent();
+                    switch (eventType)
+                    {
+                        // encounter
+                        case 0:
+                            {
+                               //bestechung
+
+                                break;
+                            }
+
+                        // storm
+                        case 1:
+                            {
+
+                                break;
+                            }
+
+                    }
                 }
             }
             if (markCHoice3 == true)
             {
                 if (Vector2.Distance(myTouch.position, qteChoice3.transform.position) <= 75)
                 {
-                   // DebugBox.text = "3";
+                 
                     markCHoice3 = false;
+                    StopQTEevent();
+                    switch (eventType)
+                    {
+                        // encounter
+                        case 0:
+                            {
+                                //   qteActivate
+                              
+
+                                break;
+                            }
+
+                        // storm
+                        case 1:
+                            {
+
+                                break;
+                            }
+
+                    }
                 }
             }
 

@@ -6,10 +6,11 @@ public class EnemyCOntroller : MonoBehaviour {
 
     GameManager myManager;
     float spawnTimer = 0;
-    float spawnInterval = 1;
+    float spawnInterval = 20;
+    bool firstSPawn = false;
     int shipCounter = 0;
-    int maxShips = 8;
-    int minShips = 2;
+    int maxShips = 20;
+    int minShips = 5;
     int currentMaxShipsFromAwareness;
     float minSpeed = 1f;
     float maxSpeed = 2f;
@@ -41,8 +42,10 @@ public class EnemyCOntroller : MonoBehaviour {
     {
       
         spawnTimer += Time.deltaTime;
-        if (spawnTimer >= spawnInterval )
+        if (spawnTimer >= spawnInterval || firstSPawn == false)
         {
+            
+            firstSPawn = true;
             currentMaxShipsFromAwareness =(int) Mathf.Lerp(minShips, maxShips, myManager.Awareness / myManager.MaxAwareNess);
             if (shipCounter < currentMaxShipsFromAwareness)
             {

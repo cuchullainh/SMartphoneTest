@@ -30,6 +30,8 @@ public class ship : MonoBehaviour {
     float spottedValue = 0;
     float maxSpottedValue = 100;
     bool spotted = false;
+    float spotLastFrame = 0;
+  
 
 
     float drownPercentage;
@@ -45,12 +47,49 @@ public class ship : MonoBehaviour {
     GameObject originHarbor = null;
 
     float dmgTimer = 0;
-    float dmgInterval = 1;
+    float dmgInterval = 5;
 
     //AbnutzungManager myDmgManager;
 
     int imShipNumber = 0;
 
+    bool enemyEncounterRunning = false;
+
+    QTEManager qteManager;
+
+    Vector3 uiPos;
+
+    bool oneTImeEvent = false;
+    bool canThrowEvent = false;
+
+    bool shipIsHold = false;
+
+  //  GameObject myTexture;
+
+
+    void ResetSpotCheck()
+    {
+        if (spottedValue == 0)
+        {
+            spotLastFrame = 0;
+        }
+    }
+
+    void StartEnemyEncounterEvent()
+    {
+        if (spotLastFrame != spottedValue && (enemyEncounterRunning == false))
+        {
+            enemyEncounterRunning = true;
+            Vector2 uiPos = Camera.main.WorldToScreenPoint(gameObject.transform.position);
+            debugFIeld.text = uiPos.ToString();
+            qteManager.StartQTevent(0,gameObject,uiPos);
+        }
+    }
+
+    void DisableEnemyEncounterEvent()
+    {
+        enemyEncounterRunning = false;
+    }
 
     public void setShipNumber(int shpnmbr)
     {
@@ -73,9 +112,7 @@ public class ship : MonoBehaviour {
               abnutzung += Mathf.Clamp(tempArray[1],0,100);
             SendBackAbnutzung(imShipNumber);
 
-            debugFIeld.text = abnutzung.ToString();
-
-        
+            //debugFIeld.text = abnutzung.ToString();
         }
     }
 
@@ -107,27 +144,54 @@ public class ship : MonoBehaviour {
         SetDefaultSpeed(originSpeed);
     }
 
+    public void HoldShip()
+    {
+        shipIsHold = true;
+    }
+
     void eventActive(int currEvent,bool eventActive)
     {
+        if (eventActive == false)
+        {
+            oneTImeEvent = false;
+            shipIsHold = false;
+        }
         if (eventActive == true)
         {
+            if (oneTImeEvent == false)
+            {
+                canThrowEvent = true;
+                oneTImeEvent = true;
+            }
+
             switch (currEvent)
             {
                 case 0://storm
-                    drownPercentage = drownPercentage * 2;
-                    SetTempSpeedCoEff(0.5f);
+                       // drownPercentage = drownPercentage * 2;
+
+                    if (shipIsHold == true)
+                    {
+                        SetTempSpeedCoEff(0f);
+                    }
+                    else
+                    {
+                        SetTempSpeedCoEff(0.5f);
+                    }
+
+                    if (canThrowEvent == true)
+                    {
+                        qteManager.StartQTevent(1, gameObject, uiPos);
+                        canThrowEvent = false;
+                    }
+                   
 
                     break;
 
                 case 1://heat/sun
 
-
                     break;
-
-
             }
-        }
-        
+        }  
     }
 
    
@@ -135,7 +199,7 @@ public class ship : MonoBehaviour {
     void Drown()
     {
         drownTimer += Time.deltaTime;
-
+        
         if (drownTimer >= drownCheckInterval)
         {
             drownTimer = 0;
@@ -178,22 +242,27 @@ public class ship : MonoBehaviour {
             }
         }
     }
-    void setAbnutzungsBar()
-    {
-        shipCanvas.GetComponent<ShipText>().SetSliderValue(abnutzung);
-    }
+    //void setSpottedValue()
+    //{
+    //    shipCanvas.GetComponent<ShipText>().SetSliderValue(spottedValue);
+    //}
      
     void Start ()
     { 
         myManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         awarenessPerDeath = (int)myManager.AwarenessPerPassengerDead;
         shipCanvas = transform.GetChild(0).GetComponent<Canvas>();
-       
+    //    myTexture = gameObject.transform.GetChild(1).gameObject;
+        qteManager = GameObject.Find("Canvas").transform.FindChild("QTEManager").GetComponent<QTEManager>();
+
         shipCanvas.transform.eulerAngles = new Vector3(0, 0, 0);
 
         debugFIeld = GameObject.Find("DebugBox").GetComponent<Text>();
         SpottedValue = spottedValue;
-       // myDmgManager  = GameObject.Find("GameManager").GetComponent<AbnutzungManager>();
+      
+
+      
+
     }
 
     void SendBackAbnutzung(int nmr)
@@ -214,7 +283,9 @@ public class ship : MonoBehaviour {
 	
 	void Update ()
     {
-        setAbnutzungsBar();
+        StartEnemyEncounterEvent();
+        ResetSpotCheck();
+        // setSpottedValue();
         AbntzngTimer();
 
         if (oneTimeSet == false)
@@ -222,13 +293,14 @@ public class ship : MonoBehaviour {
             defautDrownPercentage = passengersLoaded / 20;
             drownPercentage = defautDrownPercentage;
             shipCanvas.transform.SetParent(null);
+          //  myTexture.transform.SetParent(null);
             oneTimeSet = true;
         }
 
        // Drown();
   
         shipCanvas.transform.position = gameObject.transform.position;
-     
+     //   myTexture.transform.position = gameObject.transform.position;
 
         if (Vector3.Distance(transform.position, myParentPath.transform.GetChild(nexWayPoint).position) <= 0.1f)
         {
@@ -241,14 +313,26 @@ public class ship : MonoBehaviour {
             SendBackAbnutzung(imShipNumber);
             myManager.shipDespawned(gameObject);
             myManager.earnMoney(shipRefund);
+           // Destroy(myTexture);
             Destroy(shipCanvas);
             Destroy(gameObject);
         }
 
+        Rotate();
+      
         transform.LookAt(myParentPath.transform.GetChild(nexWayPoint).position);
-          transform.Translate(0,0, speed * Time.deltaTime);
+        transform.Translate(0,0, speed * Time.deltaTime);
     }
-  
+    void Rotate()
+    {
+        Vector3 targetPoint = myParentPath.transform.GetChild(nexWayPoint).position;
+        Quaternion targetRotation = Quaternion.LookRotation(targetPoint - transform.position, Vector3.up);
+        //transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime);
+
+        //transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 50* Time.deltaTime);
+
+
+    }
     public void ReducePassengers(int psngr)
     {
         if (passengersLoaded > 0)
@@ -277,6 +361,7 @@ public class ship : MonoBehaviour {
         myManager.shipDespawned(gameObject);
         Instantiate(Resources.Load("ShipDownParticle"), transform.position, Quaternion.identity);
         IncreaseAwareness(passengersLoaded);
+       // Destroy(myTexture);
         Destroy(shipCanvas);
         Destroy(gameObject);
     }
@@ -328,7 +413,7 @@ public class ship : MonoBehaviour {
 
     public float[] CalcDmg(float pssngrs, float zustnd, float maxpssngers)
     {
-        debugFIeld.text = "hallo";
+        //debugFIeld.text = "hallo";
 
         float[] returnArray = new float[2];
 
@@ -376,21 +461,21 @@ public class ship : MonoBehaviour {
         {
             if (minRoll < 11)
             {
-                minRoll = 11;
+               // minRoll = 11;
             }
         }
         else if (((pssngrs / maxpssngers) > 1.3f) && ((pssngrs / maxpssngers) <= 1.6f))
         {
             if (minRoll < 31)
             {
-                minRoll = 31;
+               // minRoll = 31;
             }
         }
         else if (((pssngrs / maxpssngers) > 1.6f) && ((pssngrs / maxpssngers) <= 2f))
         {
             if (minRoll < 51)
             {
-                minRoll = 51;
+                //minRoll = 51;
             }
         }
 
@@ -411,30 +496,30 @@ public class ship : MonoBehaviour {
         }
         if (roll > 10 && roll <= 20)
         {
-            minDead = 3;
-            maxDead = 8;
-            zustndLoss = 5;
+            minDead = 1;
+            maxDead = 2;
+            zustndLoss = 3;
 
         }
 
         if (roll > 20 && roll <= 50)
         {
-            minDead = 5;
-            maxDead = 15;
-            zustndLoss = 10;
+            minDead = 2;
+            maxDead = 4;
+            zustndLoss = 5;
         }
 
         if (roll > 50 && roll <= 70)
         {
-            minDead = 10;
-            maxDead = 20;
-            zustndLoss = 15;
+            minDead = 3;
+            maxDead = 9;
+            zustndLoss = 7;
         }
         if (roll > 70 && roll <= 90)
         {
-            minDead = 15;
-            maxDead = 30;
-            zustndLoss = 25;
+            minDead = 5;
+            maxDead = 25;
+            zustndLoss = 15;
         }
         if (roll > 90 && roll <= 100)
         {

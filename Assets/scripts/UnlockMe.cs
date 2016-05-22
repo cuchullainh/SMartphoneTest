@@ -11,7 +11,7 @@ public class UnlockMe : MonoBehaviour {
     void Start ()
     {
         myManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-      
+        Unlock();
     }
 	
 

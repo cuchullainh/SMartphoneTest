@@ -186,19 +186,20 @@ public class TouchAreaHarbor : MonoBehaviour {
 
         DebugBox = GameObject.Find("DebugBox").gameObject.GetComponent<Text>();
 
-      //  myDmgManager = GameObject.Find("GameManager").GetComponent<AbnutzungManager>();
+        //  myDmgManager = GameObject.Find("GameManager").GetComponent<AbnutzungManager>();
 
         //float[] testfield = new float[2];
         //testfield = myDmgManager.CalcDmg(75,50, 100);
         //print(testfield[0] + " lost passengers");
         //print(testfield[1] + " lost zustnad");
 
-      //  DebugBox.text = testfield[0].ToString() + "  " + testfield[1].ToString();
+        //  DebugBox.text = testfield[0].ToString() + "  " + testfield[1].ToString();
 
         // targetHarbor = transform.parent.parent.FindChild("TargetHarbors").GetChild(0).gameObject;
         //targetHarbor1 = transform.parent.parent.FindChild("TargetHarbors").GetChild(1).gameObject;
         // targetHarbor = GameObject.Find("TargetHarbors").transform.GetChild(0).gameObject;
 
+       
     }
 
     void SpawnShip()

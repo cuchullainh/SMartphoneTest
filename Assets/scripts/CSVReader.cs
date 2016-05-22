@@ -14,7 +14,7 @@ public class CSVReader : MonoBehaviour {
 
         string fullPath = Application.dataPath;
         string pathAddition = "/scripts/CSV/test.csv";
-        print(fullPath+pathAddition);
+      //  print(fullPath+pathAddition);
 
         //String[] values = File.ReadAllText(@"d:\test.csv").Split(',');
         myReader = new StreamReader(fullPath+pathAddition);
