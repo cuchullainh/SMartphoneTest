@@ -64,13 +64,14 @@ public class ship : MonoBehaviour {
 
     bool shipIsHold = false;
 
-  //  GameObject myTexture;
-
+    //  GameObject myTexture;
+    float rotTimer = 0;
 
     void ResetSpotCheck()
     {
         if (spottedValue == 0)
         {
+            shipCanvas.GetComponent<ShipText>().SetSliderActInAct(false);
             spotLastFrame = 0;
         }
     }
@@ -79,6 +80,7 @@ public class ship : MonoBehaviour {
     {
         if (spotLastFrame != spottedValue && (enemyEncounterRunning == false))
         {
+            shipCanvas.GetComponent<ShipText>().SetSliderActInAct(true);
             enemyEncounterRunning = true;
             Vector2 uiPos = Camera.main.WorldToScreenPoint(gameObject.transform.position);
             debugFIeld.text = uiPos.ToString();
@@ -259,9 +261,11 @@ public class ship : MonoBehaviour {
 
         debugFIeld = GameObject.Find("DebugBox").GetComponent<Text>();
         SpottedValue = spottedValue;
-      
 
-      
+      //  GameObject go2 = (GameObject)Instantiate(Resources.Load("MoneyIncome"), transform.position, Quaternion.identity);
+     //   go2.GetComponent<MoneyIncome>().setText((1000).ToString());
+
+
 
     }
 
@@ -302,12 +306,12 @@ public class ship : MonoBehaviour {
         shipCanvas.transform.position = gameObject.transform.position;
      //   myTexture.transform.position = gameObject.transform.position;
 
-        if (Vector3.Distance(transform.position, myParentPath.transform.GetChild(nexWayPoint).position) <= 0.1f)
+        if (Vector3.Distance(transform.position, myParentPath.transform.GetChild(nexWayPoint).position) <= 0.5f)
         {
             if (nexWayPoint < childItems - 1)
                 nexWayPoint++;
         }
-        if (Vector3.Distance(transform.position, despawnPoint) <= 0.1f)
+        if (Vector3.Distance(transform.position, despawnPoint) <= 0.5f)
         {
             originHarbor.GetComponent<TouchAreaHarbor>().ShipNotUnderway(imShipNumber);
             SendBackAbnutzung(imShipNumber);
@@ -320,17 +324,31 @@ public class ship : MonoBehaviour {
 
         Rotate();
       
-        transform.LookAt(myParentPath.transform.GetChild(nexWayPoint).position);
         transform.Translate(0,0, speed * Time.deltaTime);
+     //    transform.LookAt(myParentPath.transform.GetChild(nexWayPoint).position);
+       
+
     }
     void Rotate()
     {
-        Vector3 targetPoint = myParentPath.transform.GetChild(nexWayPoint).position;
-        Quaternion targetRotation = Quaternion.LookRotation(targetPoint - transform.position, Vector3.up);
-        //transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime);
+        rotTimer += Time.deltaTime;
+        if (rotTimer >= 1)
+        {
+            Vector3 targetPoint = myParentPath.transform.GetChild(nexWayPoint).position;
+           // targetPoint.z = -1;
+            Quaternion targetRotation = Quaternion.LookRotation(targetPoint - transform.position);
+            // targetRotation = Quaternion.Euler(targetRotation.eulerAngles.x, 90, 0);
+            // transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime);
+            transform.rotation = Quaternion.Euler(Mathf.LerpAngle(transform.rotation.eulerAngles.x, targetRotation.eulerAngles.x,Time.deltaTime), targetRotation.eulerAngles.y ,targetRotation.eulerAngles.z);
+           
 
-        //transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 50* Time.deltaTime);
-
+           //  transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, 90, 0);
+           
+        }
+        else
+        {
+            transform.LookAt(myParentPath.transform.GetChild(nexWayPoint).position);
+        }
 
     }
     public void ReducePassengers(int psngr)

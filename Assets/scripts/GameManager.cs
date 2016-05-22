@@ -227,6 +227,7 @@ public class GameManager : MonoBehaviour {
         money += value;
         Highscore.text = "Money " + money.ToString();
         highScoreBar.value = money / maxMoney;
+       
     }
     public void AddAwareness(int value)
     {

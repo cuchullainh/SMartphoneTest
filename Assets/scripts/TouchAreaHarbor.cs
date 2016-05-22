@@ -169,6 +169,7 @@ public class TouchAreaHarbor : MonoBehaviour {
 
     void Start ()
     {
+        
         myManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         myText = transform.FindChild("Text1").GetComponent<Text>();
@@ -206,6 +207,7 @@ public class TouchAreaHarbor : MonoBehaviour {
     {
         incRoutePoints(routeIncrease);
         myManager.earnMoney(moneyPerPassenger * passengersLoaded);
+       
         GameObject go = (GameObject)Instantiate(Resources.Load("Ship"), transform.parent.parent.FindChild("ShipSpawn").position, Quaternion.identity);
         go.GetComponent<ship>().SetPath(currentRoute);
         go.GetComponent<ship>().loadPassengers(passengersLoaded);
@@ -376,7 +378,7 @@ public class TouchAreaHarbor : MonoBehaviour {
 
         if (oHarborIsTouched == true && isSliding == false)
         {
-            gameObject.GetComponent<Image>().color = new Color(0, 0, 0, 0.3f);
+          //  gameObject.GetComponent<Image>().color = new Color(0, 0, 0, 0.3f);
             isCHarging = true;
           //  iWasTouchedLastUpdate = true;
         }
@@ -412,7 +414,7 @@ public class TouchAreaHarbor : MonoBehaviour {
             hasMoved = false;
             isCHarging = false;
             passengers = 0;
-            gameObject.GetComponent<Image>().color = new Color(1, 1, 1, 0.3f);
+           // gameObject.GetComponent<Image>().color = new Color(1, 1, 1, 0.3f);
             isSliding = false;
             initialiseSlide = false;
             

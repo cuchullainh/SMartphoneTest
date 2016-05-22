@@ -67,11 +67,14 @@ public class QTEManager : MonoBehaviour {
             // encounter
             case 0:
                 {
-                   
+                    qteActivate.GetComponent<Image>().sprite = Resources.Load<Sprite>("icon_boat_police");
                     qteChoice1.SetActive(true);
                     qteChoice2.SetActive(true);
                     qteChoice1.transform.GetChild(0).GetComponent<Text>().text = "über Bord werfen";
                     qteChoice2.transform.GetChild(0).GetComponent<Text>().text = "Bestechung";
+                    qteChoice1.GetComponent<Image>().sprite = Resources.Load<Sprite>("icon_drowning");
+                    qteChoice2.GetComponent<Image>().sprite = Resources.Load<Sprite>("icon_money_coins_staple_square");
+
                     qteChoice3.SetActive(false);
 
                     break;
@@ -80,9 +83,10 @@ public class QTEManager : MonoBehaviour {
            // storm
             case 1:
                 {
+                    qteActivate.GetComponent<Image>().sprite = Resources.Load<Sprite>("icon_storm");
                     qteChoice1.SetActive(true);
-                   
                     qteChoice1.transform.GetChild(0).GetComponent<Text>().text = "auf See warten";
+                    qteChoice1.GetComponent<Image>().sprite = Resources.Load<Sprite>("icon_boat_gum");
                     qteChoice2.SetActive(false);
                     qteChoice3.SetActive(false);
                     break;

@@ -74,8 +74,8 @@ public class EventPopUpStarter : MonoBehaviour {
         {
             case 0:
                 //storm
-                currentPopUPImage.sprite = Resources.Load<Sprite>("rainPic");
-                currentPopUPImage.color = new Color(1, 1, 1, 0.5f);
+              //  currentPopUPImage.sprite = Resources.Load<Sprite>("rainPic");
+             //   currentPopUPImage.color = new Color(1, 1, 1, 0.5f);
                 currentPopUpText.text = "A Storm is coming, drown chances are tripled, speed is halved, enemy sight radius is halved";
                 eventEffects.transform.FindChild("Storm").gameObject.SetActive(true);
                 eventEffects.transform.FindChild("NormalWeather").gameObject.SetActive(false);

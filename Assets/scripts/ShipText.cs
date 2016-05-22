@@ -30,4 +30,9 @@ public class ShipText : MonoBehaviour {
        spotSLider.value = Value;
     }
 
+    public void SetSliderActInAct(bool set)
+    {
+        spotSLider.gameObject.SetActive(set);
+    }
+
 }
